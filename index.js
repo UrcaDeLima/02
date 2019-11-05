@@ -4,6 +4,7 @@ const todoRoutes = require('./routes/todos');
 const path       = require('path');
 const bodyParser = require('body-parser');
 
+
 const PORT       = process.env.PORT || 3000;
 
 const app        = express();
@@ -15,12 +16,13 @@ app.use(todoRoutes);
 async function start() {
   try {
     await mongoose.connect(
-      'mongodb+srv://Oleg:1q2w3e4r@cluster0-wt6hi.mongodb.net/test',
+      'mongodb+srv://Oleg:1q2w3e4r@shortener-ssasr.mongodb.net/test',
       {
         useNewUrlParser: true,
         useFindAndModify: false
       }
-    );
+      //mongoose.connect('mongodb://localhost:27017/myapp', {useNewUrlParser: true});
+    )
     app.listen(PORT, () => {
       console.log('Server has been started...');
     });

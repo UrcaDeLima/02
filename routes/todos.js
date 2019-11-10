@@ -1,9 +1,6 @@
 const {Router} = require('express')
 const Url      = require('../models/Url')
 const router   = Router()
-var Memcached = require('memcached');
-var memcached = new Memcached('localhost:3000');
-var  memcached  = new Memcached ( ' localhost: 3000 ' , { retries : 10 , retry : 10000 , remove : true , failOverServers : [ ' 192.168.0.103:3000 ' ] } ) ;
 
 router.post('/new/contractor', async (req, res) => {
   const dbItem = await Url.findOne({name: req.body.name});
@@ -54,13 +51,38 @@ router.post('/new/contractor', async (req, res) => {
 });
 
 router.get('/:shortUrl', async (req, res) => {
-  memcached.set('foo', 'bar', 10, function (err) { /* stuff */ });
-  console.log(localStorage['foo'] || 'defaultValue');
+  // memcached.set('foo', 'bar', 10, function (err) { /* stuff */ });
+  // //console.log(localStorage['foo'] || 'defaultValue');
+  //
+  //
+  // memcached.get('foo', function (err, data) {
+  //   console.log(11);
+  //   console.log(data);
+  // });
 
-  memcached.get('foo', function (err, data) {
-    console.log(11);
-    console.log(data);
-  });
+  // Object to store in the memcached.....
+  // var user = {
+  // 'userId':'iuytredcvb12345sdfgh',
+  // 'userName':'testUser',
+  // 'emailId':'demo.jsonworld@gmail.com',
+  // 'phone' : 8287374553,
+  // 'availableFor' : '2 hours',
+  // 'createdOn':1543122402
+  // }
+  //
+  //
+  // // saving information to user key.
+  // memcached.set('user', user, 10000, function (err) {
+  // if(err) throw new err;
+  // });
+  //
+  //
+  // // method to get saved data....
+  // memcached.get('user', function (err, data) {
+  // console.log(data);
+  // });
+
+
   const dbItem = await Url.findOne({shortUrl: req.params.shortUrl});
   dbItem.counter = parseInt(++dbItem.counter);
   res.redirect(dbItem.url);

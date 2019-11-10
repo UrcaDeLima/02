@@ -1,6 +1,8 @@
 const {Router} = require('express')
 const Url      = require('../models/Url')
 const router   = Router()
+const NodeCache = require( "node-cache" );
+const myCache = new NodeCache();
 
 router.post('/new/contractor', async (req, res) => {
   const dbItem = await Url.findOne({name: req.body.name});
@@ -25,68 +27,22 @@ router.post('/new/contractor', async (req, res) => {
     res.send("http://localhost:3000/" + shortUrl.shortUrl);
     res.send(shortUrl.counter);
   }
-  // await Url.findOne({name: req.body.name}, async (err, obj) => {
-  //   if(obj){
-  //     res.send("http://localhost:3000/" + obj.shortUrl);
-  //   }else{
-  //     const lastAddedEntry = await Url.find().sort({_id:-1}).limit(1);
-  //     let id;
-  //     if(lastAddedEntry.length){
-  //       id = parseInt(++lastAddedEntry[0].id);
-  //     }else{
-  //       id = 1;
-  //     }
-  //     const url = new Url({
-  //       id: id,
-  //       name: req.body.name,
-  //       url: req.body.url,
-  //       counter: 0,
-  //       shortUrl: encode(id)
-  //     });
-  //     let shortUrl = await url.save();
-  //     res.send("http://localhost:3000/" + shortUrl.shortUrl);
-  //     res.send(shortUrl.counter);
-  //   }
-  // });
 });
 
 router.get('/:shortUrl', async (req, res) => {
-  // memcached.set('foo', 'bar', 10, function (err) { /* stuff */ });
-  // //console.log(localStorage['foo'] || 'defaultValue');
-  //
-  //
-  // memcached.get('foo', function (err, data) {
-  //   console.log(11);
-  //   console.log(data);
-  // });
-
-  // Object to store in the memcached.....
-  // var user = {
-  // 'userId':'iuytredcvb12345sdfgh',
-  // 'userName':'testUser',
-  // 'emailId':'demo.jsonworld@gmail.com',
-  // 'phone' : 8287374553,
-  // 'availableFor' : '2 hours',
-  // 'createdOn':1543122402
-  // }
-  //
-  //
-  // // saving information to user key.
-  // memcached.set('user', user, 10000, function (err) {
-  // if(err) throw new err;
-  // });
-  //
-  //
-  // // method to get saved data....
-  // memcached.get('user', function (err, data) {
-  // console.log(data);
-  // });
-
-
-  const dbItem = await Url.findOne({shortUrl: req.params.shortUrl});
-  dbItem.counter = parseInt(++dbItem.counter);
-  res.redirect(dbItem.url);
-  dbItem.save();
+  value = myCache.get( req.params.shortUrl );
+  if ( value == undefined ){
+    const dbItem = await Url.findOne({shortUrl: req.params.shortUrl});
+    dbItem.counter = parseInt(++dbItem.counter);
+    res.redirect(dbItem.url);
+    dbItem.save();
+    success = myCache.set( req.params.shortUrl, dbItem, 10000 );
+  }else{
+    res.redirect(value.url);
+    const dbItem = await Url.findOne({shortUrl: req.params.shortUrl});
+    dbItem.counter = parseInt(++dbItem.counter);
+    dbItem.save();
+  }
 });
 
 router.get('/myUrl/:name', async (req, res) => {

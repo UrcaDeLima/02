@@ -1,7 +1,7 @@
 # 02
 
-1) git clone https://github.com/UrcaDeLima/02.git
-2) cd 02
+1) git clone https://github.com/UrcaDeLima/linkShortener.git
+2) cd linkShortener
 3) npm install
 4) npm run dev
 5) Postman
